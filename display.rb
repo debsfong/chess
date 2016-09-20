@@ -4,6 +4,7 @@ require_relative 'piece'
 
 class Display
   attr_reader :cursor
+
   def initialize(board)
     @board = board
     @cursor = Cursor.new([0,0], board)
@@ -18,12 +19,18 @@ class Display
         colored = false
         colored = true if pos == @cursor.cursor_pos
         if square.is_a?(Piece)
-          print colored ? " #{square.to_s} ".colorize(:background => :blue) : " #{square.to_s} "
+          if square.color == :black
+            print colored ? " #{square.to_s} ".colorize(:color => :green, :background => :blue) : " #{square.to_s} ".colorize(:color => :green)
+          elsif square.color == :white
+            print colored ? " #{square.to_s} ".colorize(:color => :white, :background => :blue) : " #{square.to_s} ".colorize(:color => :white)
+          end
         else
-          print colored ? "   ".colorize(:background => :blue) : "   "
+          print colored ? "#{square.to_s}".colorize(:background => :blue) : "#{square.to_s}"
         end
       end
       puts
     end
   end
+
+
 end

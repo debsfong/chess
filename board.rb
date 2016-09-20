@@ -1,10 +1,18 @@
 require_relative 'piece'
+require_relative 'display'
+
+class NoPieceError < StandardError
+end
+
+class InvalidMoveError < StandardError
+end
 
 class Board
   attr_reader :grid
 
   def initialize
     @grid = Array.new(8) { Array.new(8) { NullPiece.instance } }
+    @display = Display.new(self)
     initialize_pieces
   end
 
@@ -13,17 +21,42 @@ class Board
     moves.include?(end_pos)
   end
 
-  def move(start_pos, end_pos)
-    if self[start_pos].is_a?(NullPiece)
-      raise "There is no piece there"
-    elsif !valid_move?(start_pos, end_pos)
-      raise "That is not a valid move"
-    else
-      self[end_pos] = self[start_pos]
-      self[end_pos].pos = end_pos
-
-      self[start_pos] = NullPiece.new
+  def move
+    begin
+      start_pos = get_pos
+      raise NoPieceError.new if self[start_pos].is_a?(NullPiece)
+      puts "Where would you like to move to?"
+    rescue NoPieceError
+      puts "There is no piece there"
+      retry
     end
+
+    begin
+      end_pos = get_pos
+      raise InvalidMoveError.new if !valid_move?(start_pos, end_pos)
+    rescue InvalidMoveError
+      puts "That is not a valid move"
+      retry
+    end
+
+    self[end_pos] = self[start_pos]
+    self[end_pos].pos = end_pos
+
+    self[start_pos] = NullPiece.instance
+  end
+
+  def get_pos
+    curr_pos = nil
+    until curr_pos == @display.cursor.cursor_pos
+      # system "clear"
+      @display.render
+      curr_pos = @display.cursor.get_input
+    end
+    curr_pos
+  rescue OutOfBoundsError
+    puts "Careful, you've gone off the grid!"
+    sleep(0.5)
+    retry
   end
 
   def initialize_pieces

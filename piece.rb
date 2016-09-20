@@ -3,7 +3,8 @@ require 'colorize'
 
 class Piece
   attr_accessor :pos
-  def initialize(color = nil, board, pos)
+  attr_reader :color
+  def initialize(color, board, pos)
     @color = color
     @board = board
     @pos = pos
@@ -87,22 +88,22 @@ end
 
 class Rook < Piece
   include SlidingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @move_dir = "horiz/vert"
     @pos = pos
     case color
     when :white
       @symbol = "\u2656".encode('utf-8')
     when :black
-      @symbol = "\u265C".encode('utf-8').colorize(:yellow)
+      @symbol = "\u265C".encode('utf-8')#.colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
 class Bishop < Piece
   include SlidingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @move_dir = "diag"
     @pos = pos
     case color
@@ -111,13 +112,13 @@ class Bishop < Piece
     when :black
       @symbol = "\u265D".encode('utf-8').colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
 class Queen < Piece
   include SlidingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @move_dir = "both"
     @pos = pos
     case color
@@ -126,13 +127,13 @@ class Queen < Piece
     when :black
       @symbol = "\u265B".encode('utf-8').colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
 class Knight < Piece
   include SteppingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @pos = pos
     case color
     when :white
@@ -140,13 +141,13 @@ class Knight < Piece
     when :black
       @symbol = "\u265E".encode('utf-8').colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
 class King < Piece
   include SteppingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @pos = pos
     case color
     when :white
@@ -154,13 +155,13 @@ class King < Piece
     when :black
       @symbol = "\u265A".encode('utf-8').colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
 class Pawn < Piece
   include SteppingPiece
-  def initialize(color = nil, board, pos)
+  def initialize(color, board, pos)
     @pos = pos
     case color
     when :white
@@ -168,7 +169,7 @@ class Pawn < Piece
     when :black
       @symbol = "\u265F".encode('utf-8').colorize(:yellow)
     end
-    super(color = nil, board, pos)
+    super(color, board, pos)
   end
 end
 
@@ -177,11 +178,11 @@ class NullPiece
 
   def initialize(color = nil)
     @moves = nil
-    @color = color
+    @color = nil
   end
 
   def to_s
-
+    "   "
   end
 
   def empty?
