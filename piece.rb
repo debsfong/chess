@@ -1,7 +1,8 @@
 require 'singleton'
+require 'colorize'
 
 class Piece
-
+  attr_accessor :pos
   def initialize(color = nil, board, pos)
     @color = color
     @board = board
@@ -10,6 +11,10 @@ class Piece
 
   def get_moves
     moves(@move_dir, @pos)
+  end
+
+  def to_s
+    @symbol
   end
 
 end
@@ -85,7 +90,12 @@ class Rook < Piece
   def initialize(color = nil, board, pos)
     @move_dir = "horiz/vert"
     @pos = pos
-    @symbol = "R"
+    case color
+    when :white
+      @symbol = "\u2656".encode('utf-8')
+    when :black
+      @symbol = "\u265C".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end
@@ -95,7 +105,12 @@ class Bishop < Piece
   def initialize(color = nil, board, pos)
     @move_dir = "diag"
     @pos = pos
-    @symbol = "B"
+    case color
+    when :white
+      @symbol = "\u2657".encode('utf-8')
+    when :black
+      @symbol = "\u265D".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end
@@ -105,7 +120,12 @@ class Queen < Piece
   def initialize(color = nil, board, pos)
     @move_dir = "both"
     @pos = pos
-    @symbol = "Q"
+    case color
+    when :white
+      @symbol = "\u2655".encode('utf-8')
+    when :black
+      @symbol = "\u265B".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end
@@ -114,7 +134,12 @@ class Knight < Piece
   include SteppingPiece
   def initialize(color = nil, board, pos)
     @pos = pos
-    @symbol = "N"
+    case color
+    when :white
+      @symbol = "\u2658".encode('utf-8')
+    when :black
+      @symbol = "\u265E".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end
@@ -123,7 +148,12 @@ class King < Piece
   include SteppingPiece
   def initialize(color = nil, board, pos)
     @pos = pos
-    @symbol = "K"
+    case color
+    when :white
+      @symbol = "\u2654".encode('utf-8')
+    when :black
+      @symbol = "\u265A".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end
@@ -132,7 +162,12 @@ class Pawn < Piece
   include SteppingPiece
   def initialize(color = nil, board, pos)
     @pos = pos
-    @symbol = "P"
+    case color
+    when :white
+      @symbol = "\u2659".encode('utf-8')
+    when :black
+      @symbol = "\u265F".encode('utf-8').colorize(:yellow)
+    end
     super(color = nil, board, pos)
   end
 end

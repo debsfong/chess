@@ -1,5 +1,8 @@
 require "io/console"
 
+class OutOfBoundsError < StandardError
+end
+
 KEYMAP = {
   " " => :space,
   "h" => :left,
@@ -92,7 +95,7 @@ class Cursor
     if @board.in_bounds?(new_pos)
       @cursor_pos = new_pos
     else
-      raise "Move not in bounds"
+      raise OutOfBoundsError.new "Move not in bounds"
     end
   end
 
