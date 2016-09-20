@@ -88,7 +88,12 @@ class Cursor
   end
 
   def update_pos(diff)
-    @cursor_pos.map!.with_index { |coord, idx| coord + diff[idx] }
+    new_pos = @cursor_pos.map.with_index { |coord, idx| coord + diff[idx] }
+    if @board.in_bounds?(new_pos)
+      @cursor_pos = new_pos
+    else
+      raise "Move not in bounds"
+    end
   end
 
 end

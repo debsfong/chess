@@ -1,8 +1,10 @@
+require_relative 'piece'
+
 class Board
   attr_reader :grid
 
   def initialize
-    @grid = Array.new(8) { Array.new(8) { NullPiece.new } }
+    @grid = Array.new(8) { Array.new(8) { NullPiece.instance } }
   end
 
   def move(start_pos, end_pos)
@@ -16,8 +18,6 @@ class Board
     end
   end
 
-
-
   def [](pos)
     row, col = pos
     @grid[row][col]
@@ -28,5 +28,8 @@ class Board
     @grid[row][col] = value
   end
 
+  def in_bounds?(pos)
+    pos.all? { |coor| coor.between?(0,7) }
+  end
 
 end
