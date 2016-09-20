@@ -13,10 +13,12 @@ class Chess
   def play
     while true
       begin
+        system "clear"
         @display.render
         @display.cursor.get_input
       rescue
         puts "Careful, you've gone off the grid!"
+        sleep(0.5)
         retry
       end
     end
