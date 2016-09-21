@@ -18,13 +18,18 @@ class Board
 
   def valid_move?(start_pos, end_pos)
     moves = self[start_pos].get_moves
-    moves.include?(end_pos)
+    move_path = self[start_pos].get_path(start_pos, end_pos)
+    moves.include?(end_pos) && self[start_pos].color != self[end_pos].color && empty_path?(move_path)
+  end
+
+  def empty_path?(path)
+    path.all? { |pos| null?(pos) }
   end
 
   def move
     begin
       start_pos = get_pos
-      raise NoPieceError.new if self[start_pos].is_a?(NullPiece)
+      raise NoPieceError.new if null?(start_pos)
       puts "Where would you like to move to?"
     rescue NoPieceError
       puts "There is no piece there"
@@ -33,7 +38,7 @@ class Board
 
     begin
       end_pos = get_pos
-      raise InvalidMoveError.new if !valid_move?(start_pos, end_pos)
+      raise InvalidMoveError.new unless valid_move?(start_pos, end_pos)
     rescue InvalidMoveError
       puts "That is not a valid move"
       retry
@@ -43,6 +48,10 @@ class Board
     self[end_pos].pos = end_pos
 
     self[start_pos] = NullPiece.instance
+  end
+
+  def null?(pos)
+    self[pos].is_a?(NullPiece)
   end
 
   def get_pos

@@ -10,8 +10,8 @@ class Piece
     @pos = pos
   end
 
-  def get_moves
-    moves(@move_dir, @pos)
+  def get_path(start_pos, end_pos)
+    get_moves
   end
 
   def to_s
@@ -20,8 +20,65 @@ class Piece
 
 end
 
+module PawnPiece
+  def get_path(start_pos, end_pos)
+    []
+  end
+
+  def get_moves
+    moves(@pos)
+  end
+
+  def moves(pos)
+    row, col = pos
+    moves = []
+
+    case @color
+    when :black
+      moves += [[row + 1, col], [row + 1, col -1], [row + 1, col + 1]]
+    when :white
+      moves += [[row - 1, col], [row - 1, col -1], [row - 1, col + 1]]
+    end
+
+    moves.select! do |coords|
+      coords.all? { |coord| coord.between?(0,7) }
+    end
+
+    moves
+  end
+end
+
 module SlidingPiece
-  def moves(dir ,pos)
+
+  def get_path(start_pos, end_pos)
+    moves = get_moves
+    path = []
+    case
+    when start_pos[0] == end_pos[0] # horizontal
+      moves.select! { |move| move[0] == start_pos[0] }.sort
+      moves.reverse if start_pos[1] > end_pos[1]
+      moves.each do |move|
+        break if move[1] == end_pos[1]
+        path << move
+      end
+    when start_pos[1] == end_pos[1] # vertical
+      moves.select! { |move| move[1] == start_pos[1] }.sort
+      moves.reverse if start_pos[0] > end_pos[0]
+      moves.each do |move|
+        break if move[0] == end_pos[0]
+        path << move
+      end
+    else
+
+    end
+    path
+  end
+
+  def get_moves
+    moves(@pos, @move_dir)
+  end
+
+  def moves(pos, dir)
     moves = []
     row, col = pos
     case dir
@@ -63,6 +120,13 @@ module SlidingPiece
 end
 
 module SteppingPiece
+  def get_path(start_pos, end_pos)
+    [] # temporary
+  end
+  def get_moves
+    moves(@pos, @diff)
+  end
+
   def moves(pos, diffs)
     moves = []
     row, col = pos
@@ -81,6 +145,9 @@ module SteppingPiece
       moves << [row, col - diffs[1]]
       moves << [row + diffs[0], col]
       moves << [row - diffs[0], col]
+    end
+    moves.select! do |coords|
+      coords.all? { |coord| coord.between?(0,7) }
     end
     moves
   end
@@ -135,6 +202,7 @@ class Knight < Piece
   include SteppingPiece
   def initialize(color, board, pos)
     @pos = pos
+    @diff = [1, 2]
     case color
     when :white
       @symbol = "\u2658".encode('utf-8')
@@ -149,6 +217,7 @@ class King < Piece
   include SteppingPiece
   def initialize(color, board, pos)
     @pos = pos
+    @diff = [1, 1]
     case color
     when :white
       @symbol = "\u2654".encode('utf-8')
@@ -160,9 +229,10 @@ class King < Piece
 end
 
 class Pawn < Piece
-  include SteppingPiece
+  include PawnPiece
   def initialize(color, board, pos)
     @pos = pos
+    @has_moved = false
     case color
     when :white
       @symbol = "\u2659".encode('utf-8')
@@ -175,6 +245,7 @@ end
 
 class NullPiece
   include Singleton
+  attr_reader :color
 
   def initialize(color = nil)
     @moves = nil
@@ -185,7 +256,4 @@ class NullPiece
     "   "
   end
 
-  def empty?
-
-  end
 end
