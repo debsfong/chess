@@ -35,9 +35,15 @@ module PawnPiece
 
     case @color
     when :black
-      moves += [[row + 1, col], [row + 1, col -1], [row + 1, col + 1]]
+      moves << [row + 1, col] if @board[[row + 1, col]].is_a?(NullPiece)
+      [[row + 1, col -1], [row + 1, col + 1]].each do |pos|
+        moves << pos unless @board[pos].is_a?(NullPiece)
+      end
     when :white
-      moves += [[row - 1, col], [row - 1, col -1], [row - 1, col + 1]]
+      moves << [row - 1, col] if @board[[row - 1, col]].is_a?(NullPiece)
+      [[row - 1, col -1], [row - 1, col + 1]].each do |pos|
+        moves << pos unless @board[pos].is_a?(NullPiece)
+      end
     end
 
     moves.select! do |coords|
@@ -69,9 +75,31 @@ module SlidingPiece
         path << move
       end
     else
-
+      path = get_path_diag(start_pos, end_pos, moves)
     end
     path
+  end
+
+  def get_path_diag(start_pos, end_pos, moves)
+    case
+    when start_pos[0] > end_pos[0]
+      moves.reject { |pos| pos[0] > start_pos[0] }
+      moves.reject { |pos| pos[0] < end_pos[0] }
+    when start_pos[0] < end_pos[0]
+      moves.reject { |pos| pos[0] < start_pos[0] }
+      moves.reject { |pos| pos[0] > end_pos[0] }
+    end
+
+    case
+    when start_pos[1] > end_pos[1]
+      moves.reject { |pos| pos[1] > start_pos[1] }
+      moves.reject { |pos| pos[1] < end_pos[1] }
+    when start_pos[1] < end_pos[1]
+      moves.reject { |pos| pos[1] < start_pos[1] }
+      moves.reject { |pos| pos[1] > end_pos[1] }
+    end
+
+    moves
   end
 
   def get_moves
